@@ -1,5 +1,7 @@
 # -*- coding: binary -*-
 
+require 'rex'
+
 module Msf
 
 
@@ -136,7 +138,9 @@ module Session
   # Returns a pretty representation of the tunnel.
   #
   def tunnel_to_s
-    "#{(tunnel_local || '??')} -> #{(tunnel_peer || '??')} #{comm_channel}"
+    tunnel_str = "#{tunnel_local || '??'} -> #{tunnel_peer || '??'}"
+    tunnel_str << " #{comm_channel}" if comm_channel
+    tunnel_str
   end
 
   ##
@@ -223,10 +227,11 @@ module Session
   #
   def cleanup
     if db_record and framework.db.active
-      ::ApplicationRecord.connection_pool.with_connection {
+      ::ApplicationRecord.connection_pool.with_connection do
         framework.db.update_session(id: db_record.id, closed_at: Time.now.utc, close_reason: db_record.close_reason)
-        db_record = nil
-      }
+      rescue ActiveRecord::RecordNotFound
+        nil  # this will fail if the workspace was deleted before the session was closed, see #18561
+      end
     end
   end
 

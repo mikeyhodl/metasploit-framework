@@ -16,7 +16,7 @@ module MetasploitModule
   CachedSize = 119
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::Armle::Prepends
 
   def initialize(info = {})
     super(merge_info(info,
@@ -40,7 +40,7 @@ module MetasploitModule
   #
   # Dynamically builds the adduser payload based on the user's options.
   #
-  def generate_stage(opts={})
+  def generate(opts={})
     user    = datastore['USER']  || 'metasploit'
     pass    = datastore['PASS']  || 'metasploit'
     shell   = datastore['SHELL'] || '/bin/sh'

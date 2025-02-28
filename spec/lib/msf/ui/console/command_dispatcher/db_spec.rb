@@ -97,7 +97,7 @@ RSpec.describe Msf::Ui::Console::CommandDispatcher::Db do
           "    Nikto XML",
           "    Nmap XML",
           "    OpenVAS Report",
-          "    OpenVAS XML",
+          "    OpenVAS XML (optional arguments -cert -dfn)",
           "    Outpost24 XML",
           "    Qualys Asset XML",
           "    Qualys Scan XML",
@@ -130,7 +130,8 @@ RSpec.describe Msf::Ui::Console::CommandDispatcher::Db do
           "    -o, --output <filename>                Send output to a file in csv format",
           "    -R, --rhosts                           Set RHOSTS from the results of the search",
           "    -S, --search <filter>                  Search string to filter by",
-          "    -t, --tag                              Add or specify a tag to a range of hosts",
+          "    -T, --delete-tag <tag>                 Remove a tag from a range of hosts",
+          "    -t, --tag <tag>                        Add or specify a tag to a range of hosts",
           "    -u, --up                               Only show hosts which are up",
           "Available columns: address, arch, comm, comments, created_at, cred_count, detected_arch, exploit_attempt_count, host_detail_count, info, mac, name, note_count, os_family, os_flavor, os_lang, os_name, os_sp, purpose, scope, service_count, state, updated_at, virtual_host, vuln_count, tags"
         ]
@@ -179,6 +180,7 @@ RSpec.describe Msf::Ui::Console::CommandDispatcher::Db do
           "    -O, --order <column id>   Order rows by specified column number.",
           "    -o, --output <filename>   Save the notes to a csv file.",
           "    -R, --rhosts              Set RHOSTS from the results of the search.",
+          "    -S, --search <filter>     Search string to filter by.",
           "    -t, --type <type1,type2>  Search for a list of types, or set single type for add.",
           "    -u, --update              Update a note. Not officially supported.",
           "",

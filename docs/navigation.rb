@@ -1,12 +1,59 @@
 # This file maps the files within `metasploit-framework.wiki/` to the navigational menu
 # Modify this file to change the doc site's navigation/hierarchy
 
-# @param path [String] the prefix to remove from a string
+# @param prefix [String] The prefix to remove from a string
 # @return [proc<String, String>] When called with a string, the returned string has the prefix removed
 def without_prefix(prefix)
   proc { |value| value.sub(/^#{prefix}/, '') }
 end
 
+=begin
+Modify `NAVIGATION_CONFIG` to add additional items to the wiki site.
+The two support options are:
+
+1) If you are adding a new wiki page, which won't appear in msfconsole by default:
+
+- Add your new page to `metasploit-framework.wiki`
+- Add a new entry to NAVIGATION_CONFIG:
+```ruby
+{
+  path: 'My-New-Page.md'
+}
+```
+
+The title will be automatically derived from the markdown file. If you wish to override this title, use:
+
+```ruby
+{
+  path: 'My-New-Page.md',
+  title: 'Custom title for navigation link'
+}
+```
+
+You can also programmatically change titles with procs, i.e. using the `without_prefix` helper to generate
+a title from the filename with a being prefix removed:
+
+```ruby
+{
+  nav_order: 7,
+  path: 'Metasploit-Guide-PostgreSQL.md',
+  title: without_prefix('Metasploit Guide ')
+}
+```
+
+2) If you are embedding existing Metasploit module documentation into the wiki site, use relative paths:
+
+```ruby
+{
+  path: '../../documentation/modules/auxiliary/admin/kerberos/forge_ticket.md',
+  title: 'Silver and golden tickets'
+}
+```
+
+These module docs will appear in msfconsole as well as the generated docs site. Note that msfconsole does not
+support Mermaid syntax - used for generating sequence diagrams/charts/etc on the rendered docs site.
+
+=end
 NAVIGATION_CONFIG = [
   {
     path: 'Home.md',
@@ -17,9 +64,173 @@ NAVIGATION_CONFIG = [
     nav_order: 2
   },
   {
+    path: 'Modules.md',
+    title: 'Modules',
+    nav_order: 3
+  },
+  {
+    title: 'Pentesting',
+    folder: 'pentesting',
+    nav_order: 4,
+    children: [
+      {
+        path: 'Metasploit-Guide-Setting-Module-Options.md',
+        nav_order: 1,
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        path: 'Metasploit-Guide-Upgrading-Shells-to-Meterpreter.md',
+        nav_order: 2,
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 3,
+        path: 'Metasploit-Guide-Post-Gather-Modules.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 5,
+        path: 'Metasploit-Guide-Kubernetes.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 5,
+        path: 'Metasploit-Guide-HTTP.md',
+        title: 'HTTP + HTTPS'
+      },
+      {
+        nav_order: 6,
+        path: 'Metasploit-Guide-MySQL.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 7,
+        path: 'Metasploit-Guide-PostgreSQL.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 8,
+        path: 'Metasploit-Guide-SMB.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 9,
+        path: 'Metasploit-Guide-SSH.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 10,
+        path: 'Metasploit-Guide-WinRM.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+
+      {
+        nav_order: 11,
+        path: 'Metasploit-Guide-MSSQL.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+      {
+        nav_order: 12,
+        path: 'Metasploit-Guide-LDAP.md',
+        title: without_prefix('Metasploit Guide ')
+      },
+
+      {
+        title: 'Active Directory',
+        folder: 'active-directory',
+        nav_order: 13,
+        children: [
+          {
+            title: 'Kerberos',
+            folder: 'kerberos',
+            children: [
+              {
+                path: 'kerberos/overview.md',
+                title: 'Overview',
+                nav_order: 0
+              },
+              {
+                path: 'kerberos/service_authentication.md',
+                title: 'Authenticating to SMB/WinRM/etc',
+                nav_order: 1
+              },
+              {
+                path: '../../documentation/modules/auxiliary/scanner/kerberos/kerberos_login.md',
+                title: 'Kerberos login enumeration and bruteforcing',
+                nav_order: 2
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/kerberos/get_ticket.md',
+                title: 'Get Ticket granting tickets and service tickets',
+                nav_order: 3,
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/kerberos/forge_ticket.md',
+                title: 'Forging tickets',
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/kerberos/inspect_ticket.md',
+                title: 'Inspecting tickets',
+              },
+              {
+                path: 'kerberos/kerberoasting.md',
+                title: 'Kerberoasting',
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/kerberos/keytab.md',
+                title: 'Keytab support and decrypting wireshark traffic'
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/kerberos/ticket_converter.md',
+                title: 'Converting kirbi and ccache files'
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/ldap/rbcd.md',
+                title: 'Resource-based constrained delegation (RBCD)'
+              },
+              {
+                path: 'kerberos/unconstrained_delegation.md',
+                title: 'Unconstrained delegation'
+              }
+            ]
+          },
+          {
+            title: 'AD CS',
+            folder: 'ad-certificates',
+            children: [
+              {
+                path: 'ad-certificates/overview.md',
+                title: 'Overview',
+                nav_order: 0
+              },
+              {
+                path: 'ad-certificates/Attacking-AD-CS-ESC-Vulnerabilities.md',
+                title: 'Attacking AD CS ESC Vulnerabilities Using Metasploit',
+                nav_order: 1
+              },
+              {
+                path: '../../documentation/modules/auxiliary/gather/ldap_esc_vulnerable_cert_finder.md',
+                title: 'Vulnerable cert finder',
+                nav_order: 2
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/ldap/ad_cs_cert_template.md',
+                title: 'Manage certificate templates'
+              },
+              {
+                path: '../../documentation/modules/auxiliary/admin/dcerpc/icpr_cert.md',
+                title: 'Request certificates'
+              }
+            ]
+          }
+        ]
+      },
+    ]
+  },
+  {
     title: 'Using Metasploit',
     folder: 'using-metasploit',
-    nav_order: 3,
+    nav_order: 5,
     children: [
       {
         title: 'Getting Started',
@@ -47,21 +258,29 @@ NAVIGATION_CONFIG = [
             nav_order: 2
           },
           {
-            path: 'How-to-use-msfvenom.md',
+            path: 'How-to-use-a-Metasploit-module-appropriately.md',
             nav_order: 3
           },
           {
-            path: 'How-to-use-a-Metasploit-module-appropriately.md'
+            path: 'How-payloads-work.md',
+            nav_order: 4
           },
           {
-            path: 'How-payloads-work.md'
+            path: 'Module-Documentation.md',
+            nav_order: 5
           },
           {
-            path: 'Module-Documentation.md'
+            path: 'How-to-use-a-reverse-shell-in-Metasploit.md',
+            nav_order: 6
           },
           {
-            path: 'How-to-use-a-reverse-shell-in-Metasploit.md'
+            path: 'How-to-use-msfvenom.md',
+            nav_order: 7
           },
+          {
+            path: 'Managing-Sessions.md',
+            nav_order: 8
+          }
         ]
       },
       {
@@ -88,10 +307,14 @@ NAVIGATION_CONFIG = [
             path: 'Hashes-and-Password-Cracking.md'
           },
           {
-            path: 'msfdb:-Database-Features-&-How-to-Set-up-a-Database-for-Metasploit.md',
-            new_base_name: 'Metasploit-Database-Support.md',
+            old_wiki_path: 'msfdb:-Database-Features-&-How-to-Set-up-a-Database-for-Metasploit.md',
+            path: 'Metasploit-Database-Support.md',
             title: 'Database Support'
           },
+          {
+            path: 'How-To-Use-Plugins.md',
+            title: 'Metasploit Plugins',
+          }
         ]
       },
       {
@@ -101,6 +324,9 @@ NAVIGATION_CONFIG = [
         children: [
           {
             path: 'Metasploit-Web-Service.md'
+          },
+          {
+            path: 'How-to-Configure-DNS.md'
           },
           {
             title: 'Meterpreter',
@@ -162,6 +388,14 @@ NAVIGATION_CONFIG = [
                 title: without_prefix('Meterpreter ')
               },
               {
+                path: 'Meterpreter-ExecuteBof-Command.md',
+                title: without_prefix('Meterpreter ')
+              },
+              {
+                path: 'Meterpreter-Reg-Command.md',
+                title: without_prefix('Meterpreter ')
+              },
+              {
                 path: 'How-to-get-started-with-writing-a-Meterpreter-script.md'
               },
               {
@@ -169,6 +403,18 @@ NAVIGATION_CONFIG = [
               },
               {
                 path: 'Python-Extension.md'
+              },
+            ]
+          },
+          {
+            title: 'RPC',
+            folder: 'RPC',
+            children: [
+              {
+                path: 'How-to-use-Metasploit-Messagepack-RPC.md'
+              },
+              {
+                path: 'How-to-use-Metasploit-JSON-RPC.md'
               },
             ]
           },
@@ -199,6 +445,9 @@ NAVIGATION_CONFIG = [
           {
             path: 'How-to-use-the-Favorite-command.md'
           },
+          {
+            path: 'How-to-use-Metasploit-with-ngrok.md'
+          },
         ]
       },
     ]
@@ -206,7 +455,7 @@ NAVIGATION_CONFIG = [
   {
     title: 'Development',
     folder: 'development',
-    nav_order: 4,
+    nav_order: 6,
     children: [
       {
         title: 'Get Started ',
@@ -218,16 +467,20 @@ NAVIGATION_CONFIG = [
             nav_order: 1
           },
           {
-            path: 'dev/Setting-Up-a-Metasploit-Development-Environment.md',
+            path: 'Creating-Your-First-PR.md',
             nav_order: 2
           },
           {
-            path: 'Sanitizing-PCAPs.md',
+            path: 'dev/Setting-Up-a-Metasploit-Development-Environment.md',
             nav_order: 3
           },
           {
-            path: "Navigating-and-Understanding-Metasploit's-Codebase.md",
-            new_base_name: 'Navigating-and-Understanding-Metasploits-Codebase.md',
+            path: 'Sanitizing-PCAPs.md',
+            nav_order: 4
+          },
+          {
+            old_wiki_path: "Navigating-and-Understanding-Metasploit's-Codebase.md",
+            path: 'Navigating-and-Understanding-Metasploits-Codebase.md',
             title: 'Navigating the codebase'
           },
           {
@@ -298,12 +551,19 @@ NAVIGATION_CONFIG = [
                 path: 'How-to-use-command-stagers.md'
               },
               {
-                path: 'How-to-write-a-check()-method.md',
-                new_base_name: 'How-to-write-a-check-method.md'
+                path: 'How-to-use-fetch-payloads.md',
+                title: 'How to use Fetch Payloads'
+              },
+              {
+                old_wiki_path: 'How-to-write-a-check()-method.md',
+                path: 'How-to-write-a-check-method.md'
               },
               {
                 path: 'How-to-check-Microsoft-patch-levels-for-your-exploit.md'
               },
+              {
+                path: "How-to-write-a-cmd-injection-module.md"
+              }
             ]
           },
           {
@@ -346,13 +606,13 @@ NAVIGATION_CONFIG = [
                 title: 'Railgun'
               },
               {
-                path: 'How-to-zip-files-with-Msf-Util-EXE.to_zip.md',
-                new_base_name: 'How-to-zip-files-with-Msf-Util-EXE-to_zip.md',
+                old_wiki_path: 'How-to-zip-files-with-Msf-Util-EXE.to_zip.md',
+                path: 'How-to-zip-files-with-Msf-Util-EXE-to_zip.md',
                 title: 'Zip'
               },
               {
-                path: 'Handling-Module-Failures-with-`fail_with`.md',
-                new_base_name: 'Handling-Module-Failures-with-fail_with.md',
+                old_wiki_path: 'Handling-Module-Failures-with-`fail_with`.md',
+                path: 'Handling-Module-Failures-with-fail_with.md',
                 title: 'Fail_with'
               },
               {
@@ -364,8 +624,8 @@ NAVIGATION_CONFIG = [
                 title: 'Fileformat'
               },
               {
-                path: 'SQL-Injection-(SQLi)-Libraries.md',
-                new_base_name: 'SQL-Injection-Libraries.md',
+                old_wiki_path: 'SQL-Injection-(SQLi)-Libraries.md',
+                path: 'SQL-Injection-Libraries.md',
                 title: 'SQL Injection'
               },
               {
@@ -377,12 +637,12 @@ NAVIGATION_CONFIG = [
                 title: 'SEH Exploitation'
               },
               {
-                path: 'How-to-clean-up-files-using-FileDropper.md',
-                title: 'FileDropper'
-              },
-              {
                 path: 'How-to-use-PhpEXE-to-exploit-an-arbitrary-file-upload-bug.md',
                 title: 'PhpExe'
+              },
+              {
+                path: 'How-to-use-the-Git-mixin-to-write-an-exploit-module.md',
+                title: 'Git Mixin'
               },
               {
                 title: 'HTTP',
@@ -414,8 +674,8 @@ NAVIGATION_CONFIG = [
                     path: 'Dot-Net-Deserialization.md'
                   },
                   {
-                    path: 'Generating-`ysoserial`-Java-serialized-objects.md',
-                    new_base_name: 'Generating-ysoserial-Java-serialized-objects.md',
+                    old_wiki_path: 'Generating-`ysoserial`-Java-serialized-objects.md',
+                    path: 'Generating-ysoserial-Java-serialized-objects.md',
                     title: 'Java Deserialization'
                   }
                 ]
@@ -447,13 +707,12 @@ NAVIGATION_CONFIG = [
                 title: 'WbemExec'
               },
               {
-                title: 'SMB',
-                folder: 'smb',
+                title: 'SMB Library',
+                folder: 'smb_library',
                 children: [
                   {
                     path: 'What-my-Rex-Proto-SMB-Error-means.md'
                   },
-
                   {
                     path: 'Guidelines-for-Writing-Modules-with-SMB.md'
                   },
@@ -462,6 +721,10 @@ NAVIGATION_CONFIG = [
               {
                 path: 'Using-ReflectiveDLL-Injection.md',
                 title: 'ReflectiveDLL Injection'
+              },
+              {
+                path: 'How-to-cleanup-after-module-execution.md',
+                title: 'Cleanup'
               },
             ]
           },
@@ -497,8 +760,8 @@ NAVIGATION_CONFIG = [
                 path: 'Module-Reference-Identifiers.md'
               },
               {
-                path: 'Definition-of-Module-Reliability,-Side-Effects,-and-Stability.md',
-                new_base_name: 'Definition-of-Module-Reliability-Side-Effects-and-Stability.md'
+                old_wiki_path: 'Definition-of-Module-Reliability,-Side-Effects,-and-Stability.md',
+                path: 'Definition-of-Module-Reliability-Side-Effects-and-Stability.md'
               },
             ]
           }
@@ -548,8 +811,8 @@ NAVIGATION_CONFIG = [
                 title: 'Adding and Updating'
               },
               {
-                path: 'Testing-Rex-and-other-Gem-File-Updates-With-Gemfile.local-and-Gemfile.local.example.md',
-                new_base_name: 'using-local-gems.md',
+                old_wiki_path: 'Testing-Rex-and-other-Gem-File-Updates-With-Gemfile.local-and-Gemfile.local.example.md',
+                path: 'Using-local-gems.md',
                 title: 'Using local Gems'
               },
               {
@@ -590,6 +853,15 @@ NAVIGATION_CONFIG = [
           {
             path: 'Writing-Module-Documentation.md'
           },
+          {
+            path: 'Loading-Test-Modules.md'
+          },
+          {
+            path: 'Payload-Testing.md'
+          },
+          {
+            path: 'Measuring-Metasploit-Performance.md'
+          }
         ]
       },
       {
@@ -631,6 +903,10 @@ NAVIGATION_CONFIG = [
             path: 'GSoC-2022-Project-Ideas.md',
             title: without_prefix('GSoC')
           },
+          {
+            path: 'GSoC-2023-Project-Ideas.md',
+            title: without_prefix('GSoC')
+          },
         ]
       },
       {
@@ -644,8 +920,8 @@ NAVIGATION_CONFIG = [
             path: 'MSF6-Feature-Proposals.md'
           },
           {
-            path: 'RFC---Metasploit-URL-support.md',
-            new_base_name: 'Metasploit-URL-support-proposal.md'
+            old_wiki_path: 'RFC---Metasploit-URL-support.md',
+            path: 'Metasploit-URL-support-proposal.md'
           },
           {
             path: 'Uberhandler.md'
@@ -656,6 +932,9 @@ NAVIGATION_CONFIG = [
           {
             path: 'Payload-Rename-Justification.md'
           },
+          {
+            path: 'Java-Meterpreter-Feature-Parity-Proposal.md'
+          }
         ]
       },
       {
@@ -685,8 +964,8 @@ NAVIGATION_CONFIG = [
             path: 'Metasploit-Breaking-Changes.md'
           },
           {
-            path: 'Metasploit-Data-Service-Enhancements-(Goliath).md',
-            new_base_name: 'Metasploit-Data-Service-Enhancements-Goliath.md',
+            old_wiki_path: 'Metasploit-Data-Service-Enhancements-(Goliath).md',
+            path: 'Metasploit-Data-Service-Enhancements-Goliath.md',
             title: 'Metasploit Data Service'
           },
         ]
@@ -695,6 +974,6 @@ NAVIGATION_CONFIG = [
   },
   {
     path: 'Contact.md',
-    nav_order: 5
+    nav_order: 7
   },
 ].freeze

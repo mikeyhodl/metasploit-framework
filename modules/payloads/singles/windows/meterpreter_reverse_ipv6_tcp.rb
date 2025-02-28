@@ -6,7 +6,7 @@
 
 module MetasploitModule
 
-  CachedSize = 175174
+  CachedSize = 177734
 
   include Msf::Payload::TransportConfig
   include Msf::Payload::Windows
@@ -52,8 +52,7 @@ module MetasploitModule
       extensions: (datastore['EXTENSIONS'] || '').split(','),
       ext_init:   (datastore['EXTINIT'] || ''),
       stageless:  true,
-      debug_build: datastore['MeterpreterDebugBuild']
-    }
+    }.merge(meterpreter_logging_config(opts))
 
     # create the configuration instance based off the parameters
     config = Rex::Payloads::Meterpreter::Config.new(config_opts)
