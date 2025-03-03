@@ -9,7 +9,7 @@ module MetasploitModule
   CachedSize = 152
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::Aarch64::Prepends
   include Msf::Sessions::CommandShellOptions
 
   def initialize(info = {})
@@ -80,7 +80,7 @@ module MetasploitModule
       ])
   end
 
-  def generate
+  def generate(_opts = {})
     p = super
 
     sh = datastore['SHELL']

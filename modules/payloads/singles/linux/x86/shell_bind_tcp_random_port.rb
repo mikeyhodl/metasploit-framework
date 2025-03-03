@@ -8,7 +8,7 @@ module MetasploitModule
   CachedSize = 57
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X86::Prepends
 
   def initialize(info = {})
     super(merge_info(info,
@@ -27,7 +27,7 @@ module MetasploitModule
       ))
   end
 
-  def generate
+  def generate(_opts = {})
     unless self.available_space.nil? || self.available_space >= 57
       payload = <<-EOS
         preparation:

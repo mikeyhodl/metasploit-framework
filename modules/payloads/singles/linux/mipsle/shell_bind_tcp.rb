@@ -9,7 +9,6 @@ module MetasploitModule
   CachedSize = 232
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
   include Msf::Sessions::CommandShellOptions
 
   def initialize(info = {})
@@ -36,7 +35,7 @@ module MetasploitModule
     )
   end
 
-  def generate
+  def generate(_opts = {})
     if !datastore['LPORT']
       return super
     end
