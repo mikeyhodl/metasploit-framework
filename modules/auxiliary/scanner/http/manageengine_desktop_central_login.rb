@@ -22,8 +22,6 @@ class MetasploitModule < Msf::Auxiliary
       'License'        => MSF_LICENSE,
       'DefaultOptions' => { 'RPORT' => 8020}
     ))
-
-    deregister_options('PASSWORD_SPRAY')
   end
 
 
@@ -54,8 +52,8 @@ class MetasploitModule < Msf::Auxiliary
     service_data = {
       address: ip,
       port: port,
-      service_name: 'http',
-      protocol: 'tcp',
+      service_name: result.service_name,
+      protocol: result.protocol,
       workspace_id: myworkspace_id
     }
 

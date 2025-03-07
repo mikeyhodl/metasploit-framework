@@ -8,7 +8,7 @@ module MetasploitModule
   CachedSize = 63
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X86::Prepends
 
   def initialize(info = {})
     super(merge_info(info,
@@ -28,7 +28,7 @@ module MetasploitModule
       ])
   end
 
-  def generate_stage(opts={})
+  def generate(opts={})
     fd = datastore['FD']
 
     payload_data =<<-EOS

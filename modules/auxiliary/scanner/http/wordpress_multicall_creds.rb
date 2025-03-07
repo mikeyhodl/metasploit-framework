@@ -30,7 +30,7 @@ class MetasploitModule < Msf::Auxiliary
       'References'  =>
         [
           ['URL', 'https://blog.cloudflare.com/a-look-at-the-new-wordpress-brute-force-amplification-attack/' ],
-          ['URL', 'https://blog.sucuri.net/2014/07/new-brute-force-attacks-exploiting-xmlrpc-in-wordpress.html' ]
+          ['URL', 'http://web.archive.org/web/20250220003829/https://blog.sucuri.net/2014/07/new-brute-force-attacks-exploiting-xmlrpc-in-wordpress.html' ]
         ],
       'DefaultOptions' =>
         {
@@ -48,7 +48,7 @@ class MetasploitModule < Msf::Auxiliary
     # Not supporting these options, because we are not actually letting the API to process the
     # password list for us. We are doing that in Metasploit::Framework::LoginScanner::WordpressRPC.
     deregister_options(
-      'BLANK_PASSWORDS', 'PASSWORD', 'USERPASS_FILE', 'USER_AS_PASS', 'DB_ALL_CREDS', 'DB_ALL_PASS', 'DB_SKIP_EXISTING', 'PASSWORD_SPRAY'
+      'BLANK_PASSWORDS', 'PASSWORD', 'USERPASS_FILE', 'USER_AS_PASS', 'DB_ALL_CREDS', 'DB_ALL_PASS', 'DB_SKIP_EXISTING'
       )
   end
 
@@ -91,7 +91,7 @@ class MetasploitModule < Msf::Auxiliary
     if check_setup
       print_status("XMLRPC enabled, Hello message received!")
     else
-      print_error("Abborting the attack.")
+      print_error("Aborting the attack.")
       return
     end
 

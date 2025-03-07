@@ -3,8 +3,6 @@
 # Current source: https://github.com/rapid7/metasploit-framework
 ##
 
-require 'metasploit/framework/hashes/identify'
-
 class MetasploitModule < Msf::Auxiliary
   include Msf::Exploit::Remote::Tcp
   include Msf::Auxiliary::Report
@@ -32,7 +30,7 @@ class MetasploitModule < Msf::Auxiliary
         [
           ['CVE', '2016-2055'],
           ['PACKETSTORM', '135758'],
-          ['URL', 'https://lists.xymon.com/pipermail/xymon/2016-February/042986.html'],
+          ['URL', 'http://web.archive.org/web/20240519104648/https://lists.xymon.com/pipermail/xymon/2016-February/042986.html'],
           ['URL', 'https://xymon.sourceforge.net/'],
           ['URL', 'https://en.wikipedia.org/wiki/Xymon'],
           ['URL', 'https://en.wikipedia.org/wiki/Big_Brother_(software)']
@@ -112,7 +110,7 @@ class MetasploitModule < Msf::Auxiliary
             origin_type: :service,
             private_data: hash,
             private_type: :nonreplayable_hash,
-            jtr_format: identify_hash(hash),
+            jtr_format: Metasploit::Framework::Hashes.identify_hash(hash),
             username: user
           }.merge(service_data)
 

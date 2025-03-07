@@ -41,7 +41,11 @@ class Auxiliary
   #
   # Executes an auxiliary module
   #
-  def cmd_run(*args, action: nil)
+  def cmd_run(*args, action: nil, opts: {})
+    if (args.include?('-r') || args.include?('--reload-libs')) && !opts[:previously_reloaded]
+      driver.run_single('reload_lib -a')
+    end
+
     return false unless (args = parse_run_opts(args, action: action))
     jobify = args[:jobify]
 
@@ -57,15 +61,8 @@ class Auxiliary
     rhosts_walker = Msf::RhostsWalker.new(rhosts, mod_with_opts.datastore)
 
     begin
-      mod_with_opts.validate
-    rescue ::Msf::OptionValidateError => e
-      ::Msf::Ui::Formatter::OptionValidateError.print_error(mod_with_opts, e)
-      return false
-    end
-
-    begin
       # Check if this is a scanner module or doesn't target remote hosts
-      if rhosts.blank? || mod.class.included_modules.include?(Msf::Auxiliary::Scanner)
+      if rhosts.blank? || mod.class.included_modules.include?(Msf::Auxiliary::MultipleTargetHosts)
         mod_with_opts.run_simple(
           'Action'         => args[:action],
           'LocalInput'     => driver.input,
@@ -75,6 +72,8 @@ class Auxiliary
         )
       # For multi target attempts with non-scanner modules.
       else
+        # When RHOSTS is split, the validation changes slightly, so perform it reports the host the validation failed for
+        mod_with_opts.validate
         rhosts_walker.each do |datastore|
           mod_with_opts = mod.replicant
           mod_with_opts.datastore.merge!(datastore)
@@ -98,15 +97,14 @@ class Auxiliary
     rescue ::Interrupt
       print_error("Auxiliary interrupted by the console user")
     rescue ::Msf::OptionValidateError => e
-      ::Msf::Ui::Formatter::OptionValidateError.print_error(running_mod, e)
+      ::Msf::Ui::Formatter::OptionValidateError.print_error(mod_with_opts, e)
+      return false
     rescue ::Exception => e
       print_error("Auxiliary failed: #{e.class} #{e}")
-      if(e.class.to_s != 'Msf::OptionValidateError')
-        print_error("Call stack:")
-        e.backtrace.each do |line|
-          break if line =~ /lib.msf.base.simple/
-          print_error("  #{line}")
-        end
+      print_error("Call stack:")
+      e.backtrace.each do |line|
+        break if line =~ /lib.msf.base.simple/
+        print_error("  #{line}")
       end
 
       return false
@@ -132,8 +130,14 @@ class Auxiliary
   # Reloads an auxiliary module and executes it
   #
   def cmd_rerun(*args)
+    opts = {}
+    if args.include?('-r') || args.include?('--reload-libs')
+      driver.run_single('reload_lib -a')
+      opts[:previously_reloaded] = true
+    end
+
     if reload(true)
-      cmd_run(*args)
+      cmd_run(*args, opts: opts)
     end
   end
 
@@ -146,9 +150,15 @@ class Auxiliary
   # vulnerable.
   #
   def cmd_rcheck(*args)
+    opts = {}
+    if args.include?('-r') || args.include?('--reload-libs')
+      driver.run_single('reload_lib -a')
+      opts[:previously_reloaded] = true
+    end
+
     reload()
 
-    cmd_check(*args)
+    cmd_check(*args, opts: opts)
   end
 
   alias cmd_recheck cmd_rcheck

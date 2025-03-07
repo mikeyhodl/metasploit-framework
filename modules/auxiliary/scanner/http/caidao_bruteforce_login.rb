@@ -20,7 +20,7 @@ class MetasploitModule < Msf::Auxiliary
       'References'     => [
         ['URL', 'https://www.fireeye.com/blog/threat-research/2013/08/breaking-down-the-china-chopper-web-shell-part-i.html'],
         ['URL', 'https://www.mandiant.com/resources/breaking-down-the-china-chopper-web-shell-part-ii'],
-        ['URL', 'https://www.exploit-db.com/docs/27654.pdf'],
+        ['URL', 'http://web.archive.org/web/20170214000632/https://www.exploit-db.com/docs/27654.pdf'],
         ['URL', 'https://www.cisa.gov/uscert/ncas/alerts/TA15-314A'],
         ['URL', 'http://blog.csdn.net/nixawk/article/details/40430329']
       ],
@@ -38,7 +38,7 @@ class MetasploitModule < Msf::Auxiliary
       ])
 
     # caidao does not have an username, there's only password
-    deregister_options('HttpUsername', 'HttpPassword', 'USERNAME', 'USER_AS_PASS', 'USERPASS_FILE', 'USER_FILE', 'DB_ALL_USERS', 'PASSWORD_SPRAY')
+    deregister_options('HttpUsername', 'HttpPassword', 'USERNAME', 'USER_AS_PASS', 'USERPASS_FILE', 'USER_FILE', 'DB_ALL_USERS')
   end
 
   def scanner(ip)

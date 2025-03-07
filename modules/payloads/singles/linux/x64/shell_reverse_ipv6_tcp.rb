@@ -9,7 +9,7 @@ module MetasploitModule
   CachedSize = 90
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X64::Prepends
   include Msf::Sessions::CommandShellOptions
 
   def initialize(info = {})
@@ -40,7 +40,7 @@ module MetasploitModule
       arr.map{ |x| sprintf("0x%02x", x.hex) }.join(',')
   end
 
-  def generate_stage
+  def generate(opts={})
       # 22 -> "0x00,0x16"
       # 4444 -> "0x11,0x5c"
       tcp_port = convert_input(datastore['LPORT'], 4)

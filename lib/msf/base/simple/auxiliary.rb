@@ -58,8 +58,9 @@ module Auxiliary
       raise MissingActionError, "Please use: #{mod.actions.collect {|e| e.name} * ", "}"
     end
 
-    # Verify the options
-    mod.options.validate(mod.datastore)
+    # Validate the option container state so that options will
+    # be normalized
+    mod.validate
 
     # Initialize user interaction
     if ! opts['Quiet']
@@ -71,7 +72,8 @@ module Auxiliary
     run_uuid = Rex::Text.rand_text_alphanumeric(24)
     job_listener.waiting run_uuid
     ctx = [mod, run_uuid, job_listener]
-    if(mod.passive? or opts['RunAsJob'])
+    run_as_job = opts['RunAsJob'].nil? ? mod.passive? : opts['RunAsJob']
+    if run_as_job
       mod.job_id = mod.framework.jobs.start_bg_job(
         "Auxiliary: #{mod.refname}",
         ctx,
@@ -240,4 +242,3 @@ end
 
 end
 end
-

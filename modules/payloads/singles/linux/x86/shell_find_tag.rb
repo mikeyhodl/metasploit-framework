@@ -9,7 +9,7 @@ module MetasploitModule
   CachedSize = 69
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X86::Prepends
   include Msf::Sessions::CommandShellOptions
 
   def initialize(info = {})
@@ -41,7 +41,7 @@ module MetasploitModule
   #
   # Ensures the setting of TAG to a four byte value
   #
-  def generate
+  def generate(_opts = {})
     datastore['TAG'] = _find_tag
 
     super

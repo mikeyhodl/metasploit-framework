@@ -238,12 +238,19 @@ module Msf::Sessions
     def bootstrap(datastore = {}, handler = nil)
       # this won't work after the rstream is initialized, so do it first
       @platform = Metasploit::Framework::Ssh::Platform.get_platform(ssh_connection)
+      if @platform == 'windows'
+        extend(Msf::Sessions::WindowsEscaping)
+      elsif Metasploit::Framework::Ssh::Platform.is_posix(@platform)
+        extend(Msf::Sessions::UnixEscaping)
+      else
+        raise ::Net::SSH::Exception.new("Unknown platform: #{platform}")
+      end
 
       # if the platform is known, it was recovered by communicating with the device, so skip verification, also not all
       # shells accessed through SSH may respond to the echo command issued for verification as expected
       datastore['AutoVerifySession'] &= @platform.blank?
 
-      @rstream = Net::SSH::CommandStream.new(ssh_connection).lsock
+      @rstream = Net::SSH::CommandStream.new(ssh_connection, session: self, logger: self).lsock
       super
 
       @info = "SSH #{username} @ #{@peer_info}"
@@ -285,6 +292,10 @@ module Msf::Sessions
       notify_socket_created(self, sock, params)
 
       sock
+    end
+
+    def supports_udp?
+      false
     end
 
     def create_server_channel(params)
@@ -342,7 +353,7 @@ module Msf::Sessions
       begin
         completed_event.wait(timeout)
         true
-      rescue TimeoutError
+      rescue ::Timeout::Error
         false
       end
     end

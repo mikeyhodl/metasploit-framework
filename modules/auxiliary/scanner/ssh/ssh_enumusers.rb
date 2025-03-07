@@ -62,10 +62,10 @@ class MetasploitModule < Msf::Auxiliary
         ],
         'DefaultAction' => 'Malformed Packet',
         'Notes' => {
-          'Stability' => [],
-          'Reliability' => [
+          'Stability' => [
             CRASH_SERVICE_DOWN # possible that a malformed packet may crash the service
           ],
+          'Reliability' => [],
           'SideEffects' => [
             IOC_IN_LOGS,
             ACCOUNT_LOCKOUTS, # timing attack submits a password
@@ -91,7 +91,7 @@ class MetasploitModule < Msf::Auxiliary
                      'found (timing attack only)', 10
                    ]),
         OptBool.new('CHECK_FALSE',
-                    [false, 'Check for false positives (random username)', false])
+                    [false, 'Check for false positives (random username)', true])
       ]
     )
 
@@ -137,14 +137,9 @@ class MetasploitModule < Msf::Auxiliary
   def check_user(ip, user, port)
     technique = action['Type']
 
-    opts = {
-      port: port,
-      use_agent: false,
-      config: false,
-      proxy: ssh_socket_factory,
-      non_interactive: true,
-      verify_host_key: :never
-    }
+    opts = ssh_client_defaults.merge({
+      port: port
+    })
 
     # The auth method is converted into a class name for instantiation,
     # so malformed-packet here becomes MalformedPacket from the mixin

@@ -39,9 +39,9 @@ class MetasploitModule < Msf::Auxiliary
         'Notes' => {
           'Stability' => [CRASH_SAFE],
           'Reliability' => [REPEATABLE_SESSION],
-          'SideEffects' => [CONFIG_CHANGES, IOC_IN_LOGS]
+          'SideEffects' => [CONFIG_CHANGES, IOC_IN_LOGS],
+          'RelatedModules' => [ 'exploit/linux/telnet/netgear_telnetenable' ] # This module relies on users also running exploit/linux/telnet/netgear_telnetenable to get the shell.
         },
-        'RelatedModules' => [ 'exploit/linux/telnet/netgear_telnetenable' ], # This module relies on users also running exploit/linux/telnet/netgear_telnetenable to get the shell.
         'DisclosureDate' => '2021-09-06',
         'DefaultTarget' => 0
       )
@@ -188,7 +188,7 @@ class MetasploitModule < Msf::Auxiliary
     res = send_request_cgi(
       'uri' => '/top.html',
       'method' => 'GET',
-      'keep_cookies' => 'true'
+      'keep_cookies' => true
     )
 
     if res.nil?

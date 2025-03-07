@@ -9,7 +9,7 @@ module MetasploitModule
   CachedSize = 68
 
   include Msf::Payload::Single
-  include Msf::Payload::Linux
+  include Msf::Payload::Linux::X86::Prepends
   include Msf::Sessions::CommandShellOptions
 
   def initialize(info = {})
@@ -29,7 +29,7 @@ module MetasploitModule
     ])
   end
 
-  def generate
+  def generate(_opts = {})
     # pad the shell path to a multiple of 4 with slashes
     shell = datastore['CMD']
     remainder = shell.bytes.length % 4
